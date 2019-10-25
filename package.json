@@ -1,0 +1,60 @@
+{
+  "name": "uav-xai-simulation",
+  "version": "0.0.1",
+  "description": "Explainable UAV simulation",
+  "main": "index.js",
+  "scripts": {
+    "build-prod": "cross-env NODE_ENV=production node ./build/build.js",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --config ./build/webpack.config.js",
+    "start": "npm run dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TimKam/uav-xai-simulation.git"
+  },
+  "keywords": [
+    "UAV",
+    "XAI",
+    "Simulation",
+    "Agents"
+  ],
+  "author": "Timotheus Kampik",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/TimKam/uav-xai-simulation/issues"
+  },
+  "homepage": "https://github.com/TimKam/uav-xai-simulation#readme",
+  "dependencies": {
+    "dom7": "^2.1.3",
+    "framework7": "^5.0.5",
+    "framework7-icons": "^3.0.0",
+    "js-son-agent": "0.0.5",
+    "material-design-icons": "^3.0.1",
+    "template7": "^1.4.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.4",
+    "@fortawesome/fontawesome-free": "^5.11.2",
+    "babel-loader": "^8.0.6",
+    "chalk": "^2.4.2",
+    "copy-webpack-plugin": "^5.0.4",
+    "cross-env": "^6.0.3",
+    "css-loader": "^3.2.0",
+    "file-loader": "^4.2.0",
+    "framework7-component-loader": "^2.0.0",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.8.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "ora": "^4.0.2",
+    "postcss-loader": "^3.0.0",
+    "postcss-preset-env": "^6.7.0",
+    "rimraf": "^3.0.0",
+    "style-loader": "^1.0.0",
+    "terser-webpack-plugin": "^2.2.1",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "url-loader": "^2.2.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.9.0"
+  }
+}
