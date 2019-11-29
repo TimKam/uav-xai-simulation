@@ -37,21 +37,28 @@ var app = new Framework7({ // eslint-disable-line no-unused-vars
                 ${gridWorld.state.positions.map((_, index) => `<td>${index}</td>`).join('')}
               </tr>
               <tr>
-                <td><strong>Capacity</strong></td>
-                ${gridWorld.state.capacity.map(capacity => `<td>${capacity}</td>`).join('')}
-              </tr>
-              <tr>
                 <td><strong>Battery</strong></td>
                 ${gridWorld.state.battery.map(batteryLevel => `<td>${batteryLevel}</td>`).join('')}
               </tr>
               <tr>
                 <td><strong>Package loaded?</strong></td>
-                ${gridWorld.state.packageLoaded.map(packageLoaded => `<td>${packageLoaded}</td>`).join('')}
+                ${gridWorld.state.packageLoaded.map(packageLoaded => `<td>${packageLoaded ? 'Yes' : 'No'}</td>`).join('')}
               </tr>
               <tr>
                 <td><strong>Current task</strong></td>
                 ${gridWorld.state.missions.map(mission => `<td>${mission.type === 'goto' ? `Go to ${mission.target}` : 'Idle'}</td>`).join('')}
               </tr>
+              <tr>
+                <td><strong>Task type</strong></td>
+                ${gridWorld.state.missions.map(mission => `<td>${mission.type === 'goto' ? `Go to ${mission.target}` : 'Idle'}</td>`).join('')}
+              </tr>
+              <tr>
+              <td><strong>Position</strong></td>
+              ${gridWorld.state.positions.map(position => `<td>${position}</td>`).join('')}
+            </tr>
+              <td><strong>Location type</strong></td>
+              ${gridWorld.state.positions.map(position => `<td>${gridWorld.state.fields[position]}</td>`).join('')}
+            </tr>
             </table>
           `)
         }
@@ -61,3 +68,8 @@ var app = new Framework7({ // eslint-disable-line no-unused-vars
   // App routes
   routes: routes
 })
+/*
+<tr>
+  <td><strong>Capacity</strong></td>
+  ${gridWorld.state.capacity.map(capacity => `<td>${capacity}</td>`).join('')}
+</tr>*/
