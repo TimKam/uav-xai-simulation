@@ -1,7 +1,7 @@
 // import js-son and assign Belief, Plan, Agent, GridWorld, and FieldType to separate consts
 import { Belief, Desire, Plan, Agent, GridWorld, FieldType } from 'js-son-agent'
 
-const numberOfDrones = 2
+const numberOfDrones = 10
 const maxBatteryLevel = 35
 
 const numberToLetter = number => (number + 10).toString(36).toUpperCase()
@@ -18,9 +18,9 @@ const determineDirection = (position, target) => {
   const verticalDistance = distance[1]
   console.log(position, target, distance)
   if (verticalDistance > 0) {
-    return 'down'
-  } else if (verticalDistance < 0) {
     return 'up'
+  } else if (verticalDistance < 0) {
+    return 'down'
   } else if (horizontalDistance < 0) {
     return 'right'
   } else if (horizontalDistance > 0) {
@@ -32,8 +32,9 @@ const determineDirection = (position, target) => {
 
 const determineNextMove = (state, agentId) => {
   const position = state.positions[agentId]
-  if (state.missions[agentId].type === 'goto') {
-    return determineDirection(position, state.missions[agentId].target)
+  const target = state.missions[agentId].target
+  if (state.missions[agentId].type === 'goto' && position !== target) {
+    return determineDirection(position, target)
   } else {
     if (state.packageLoaded[agentId]) {
       const mission = state.packageLoaded[agentId]
@@ -121,7 +122,9 @@ const determinePackageMission = (state, position, selfAgentId) => {
 
 /* desires */
 const desires = {
-  ...Desire('go', beliefs => determineNextMove(beliefs.state, beliefs.id))
+  ...Desire('go', beliefs => {
+    return determineNextMove(beliefs.state, beliefs.id)
+  })
 }
 
 const plans = [
@@ -167,6 +170,24 @@ const generateAgents = initialState => initialState.positions.map((position, ind
     plans
   )
 })
+
+/* generate explainer agent */
+/* const xAgentId = initialState.positions.length
+const generateExplainerAgent = () => {
+  const id = xAgentId
+  const xAgentBeliefs = {
+    ...Belief('complexity', undefined),
+    ...Belief('dronesIdle', undefined),
+    ...Belief('packagesWaiting', undefined),
+    ...Belief('missions', undefined),
+  }
+  const desires = {
+
+  }
+  const plans = [
+    Plan(intention)
+  ]
+}*/
 
 /* generate pseudo-random initial state */
 const generateInitialState = () => {
@@ -273,15 +294,16 @@ const generateConsequence = (state, agentId, newPosition) => {
 }
 
 const trigger = (actions, agentId, state, position) => {
+  console.log(agentId)
   switch (actions[0].go) {
-    case 'up':
+    case 'down':
       if (position && position + 20 < 400) {
         state = generateConsequence(state, agentId, position + 20)
       } else {
         state = generateConsequence(state, agentId, position)
       }
       break
-    case 'down':
+    case 'up':
       if (position && position - 20 >= 0) {
         state = generateConsequence(state, agentId, position - 20)
       } else {

@@ -50,7 +50,7 @@ var app = new Framework7({ // eslint-disable-line no-unused-vars
               </tr>
               <tr>
                 <td><strong>Task type</strong></td>
-                ${gridWorld.state.missions.map(mission => `<td>${mission.type === 'goto' ? `Go to ${mission.target}` : 'Idle'}</td>`).join('')}
+                ${determineTaskTypes(gridWorld.state)}
               </tr>
               <tr>
               <td><strong>Position</strong></td>
@@ -68,8 +68,15 @@ var app = new Framework7({ // eslint-disable-line no-unused-vars
   // App routes
   routes: routes
 })
-/*
-<tr>
-  <td><strong>Capacity</strong></td>
-  ${gridWorld.state.capacity.map(capacity => `<td>${capacity}</td>`).join('')}
-</tr>*/
+
+function determineTaskTypes (state) {
+  const taskTypes = state.missions.map(mission => {
+    let taskType = 'Idle'
+    if (mission.type === 'goto') {
+      const fieldType = state.fields[mission.target]
+      taskType = `Go to ${fieldType}`
+    }
+    return `<td>${taskType}</td>`
+  });
+  return taskTypes.join('')
+}
