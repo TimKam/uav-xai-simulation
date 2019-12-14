@@ -1,7 +1,44 @@
 // import js-son and assign Belief, Plan, Agent, GridWorld, and FieldType to separate consts
 import { Belief, Desire, Plan, Agent, GridWorld, FieldType } from 'js-son-agent'
 
-const numberOfDrones = 10
+
+const url = new URL(window.location.href)
+const seedParam = url.searchParams.get('seed')
+const scenarioParam = url.searchParams.get('scenario')
+
+let seed
+if (seedParam) {
+  seed = Number(seedParam)
+  Math.random = () => {
+      var x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+  }
+}
+
+let numberOfDrones = 10
+let numberOfPackages = 15
+let numberOfChargers = 10
+let numberOfTargets = 10
+
+if (scenarioParam) {
+  if (scenarioParam === 's0') {
+    numberOfDrones = 1
+    numberOfPackages = 1
+    numberOfChargers = 1
+    numberOfTargets = 1
+  } else if (scenarioParam === 's1') {
+    numberOfDrones = 3
+    numberOfPackages = 6
+    numberOfChargers = 2
+    numberOfTargets = 2
+  } else {
+    numberOfDrones = 10
+    numberOfPackages = 15
+    numberOfChargers = 10
+    numberOfTargets = 10
+  }
+}
+
 const maxBatteryLevel = 35
 
 const numberToLetter = number => (number + 10).toString(36).toUpperCase()
@@ -16,7 +53,7 @@ const determineDirection = (position, target) => {
   const distance = determineDistance(position, target)
   const horizontalDistance = distance[0]
   const verticalDistance = distance[1]
-  console.log(position, target, distance)
+  // console.log(position, target, distance)
   if (verticalDistance > 0) {
     return 'up'
   } else if (verticalDistance < 0) {
@@ -198,12 +235,11 @@ const generateInitialState = () => {
   const chargePositions = []
   const fields = Array(dimensions[0] * dimensions[1]).fill(0).map((_, index) => {
     const rand = Math.random()
-    if (rand < 0.02) {
+    if (rand < 0.02 && targetPositions.length < numberOfTargets) {
       targetPositions.push(index)
       return 'target'
-    } else if (rand < 0.06) {
+    } else if (rand < 0.06 && packages.length < numberOfPackages) {
       if (targetPositions.length > 0) {
-        console.log(index)
         packages.push({
           position: index,
           weight: Math.ceil(Math.random() * 5),
@@ -214,7 +250,7 @@ const generateInitialState = () => {
         targetPositions.push(index)
         return 'target'
       }
-    } else if (rand < 0.085) {
+    } else if (rand < 0.085 && chargePositions.length < numberOfChargers) {
       chargePositions.push(index)
       return 'station'
     } else if (rand < 0.13 && positions.length < numberOfDrones) {
@@ -294,7 +330,6 @@ const generateConsequence = (state, agentId, newPosition) => {
 }
 
 const trigger = (actions, agentId, state, position) => {
-  console.log(agentId)
   switch (actions[0].go) {
     case 'down':
       if (position && position + 20 < 400) {

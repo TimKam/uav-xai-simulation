@@ -20,7 +20,7 @@
 }
 
 /* Arena / Grid World */
-#arena-grid, #analysis {
+#arena-grid, #analysis, #legend {
   margin: 0 auto;
 }
 
@@ -29,11 +29,11 @@
   float: left;
 }
 
-#analysis {
+#analysis, #legend {
   margin-top: 20px;
 }
 
-#analysis table {
+#analysis table, #legend {
   margin: 0 auto;
 }
 
@@ -116,4 +116,10 @@ td {
   margin-top: -30px;
   margin-left: -5px;
   font-weight: bold;
+}
+
+table.bdi td {
+  width: 120px;
+  display: inline-block;
+  padding-left: 10px;
 }
