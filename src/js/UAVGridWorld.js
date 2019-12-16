@@ -19,6 +19,9 @@ let numberOfDrones = 10
 let numberOfPackages = 15
 let numberOfChargers = 10
 let numberOfTargets = 10
+let probFactor = 1
+let maxBatteryLevel = 45
+let packgeRespawnRate = 0.3
 
 if (scenarioParam) {
   if (scenarioParam === 's0') {
@@ -26,20 +29,19 @@ if (scenarioParam) {
     numberOfPackages = 1
     numberOfChargers = 1
     numberOfTargets = 1
+    probFactor = 0.1
+    maxBatteryLevel = 60
+    packgeRespawnRate = 1
   } else if (scenarioParam === 's1') {
-    numberOfDrones = 3
+    numberOfDrones = 4
     numberOfPackages = 6
-    numberOfChargers = 2
+    numberOfChargers = 5
     numberOfTargets = 2
-  } else {
-    numberOfDrones = 10
-    numberOfPackages = 15
-    numberOfChargers = 10
-    numberOfTargets = 10
+    probFactor = 0.35
+    maxBatteryLevel = 65
+    packgeRespawnRate = 0.1
   }
 }
-
-const maxBatteryLevel = 35
 
 const numberToLetter = number => (number + 10).toString(36).toUpperCase()
 
@@ -208,24 +210,6 @@ const generateAgents = initialState => initialState.positions.map((position, ind
   )
 })
 
-/* generate explainer agent */
-/* const xAgentId = initialState.positions.length
-const generateExplainerAgent = () => {
-  const id = xAgentId
-  const xAgentBeliefs = {
-    ...Belief('complexity', undefined),
-    ...Belief('dronesIdle', undefined),
-    ...Belief('packagesWaiting', undefined),
-    ...Belief('missions', undefined),
-  }
-  const desires = {
-
-  }
-  const plans = [
-    Plan(intention)
-  ]
-}*/
-
 /* generate pseudo-random initial state */
 const generateInitialState = () => {
   const dimensions = [20, 20]
@@ -235,7 +219,7 @@ const generateInitialState = () => {
   const chargePositions = []
   const fields = Array(dimensions[0] * dimensions[1]).fill(0).map((_, index) => {
     const rand = Math.random()
-    if (rand < 0.02 && targetPositions.length < numberOfTargets) {
+    if (rand < 0.02 * probFactor && targetPositions.length < numberOfTargets) {
       targetPositions.push(index)
       return 'target'
     } else if (rand < 0.06 && packages.length < numberOfPackages) {
@@ -250,10 +234,10 @@ const generateInitialState = () => {
         targetPositions.push(index)
         return 'target'
       }
-    } else if (rand < 0.085 && chargePositions.length < numberOfChargers) {
+    } else if (rand < 0.085 * probFactor && chargePositions.length < numberOfChargers) {
       chargePositions.push(index)
       return 'station'
-    } else if (rand < 0.13 && positions.length < numberOfDrones) {
+    } else if (rand < 0.13 * probFactor && positions.length < numberOfDrones) {
       positions.push(index)
       return 'plain'
     } else {
@@ -291,7 +275,7 @@ const generateConsequence = (state, agentId, newPosition) => {
           state.packageLoaded[agentId] = packet.target
           state.packages.splice(state.packages.indexOf(packet), 1)
           state.missions[agentId].target = packet.target
-          if (Math.random() < 0.5) {
+          if (Math.random() < packgeRespawnRate) {
             const newPackagePosition = Math.ceil(Math.random() * 400)
             if (state.fields[newPackagePosition] === 'plain')
               state.fields[newPackagePosition] = 'package'

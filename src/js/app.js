@@ -1,6 +1,9 @@
 import $$ from 'dom7'
 import Framework7 from 'framework7/framework7.esm.bundle.js'
 import 'framework7/css/framework7.bundle.css'
+
+import toastr from 'toastr'
+
 // Icons and App Custom Styles
 import '../css/icons.css'
 import '../css/app.css'
@@ -11,6 +14,16 @@ import GridWorld from './UAVGridWorld'
 
 const url = new URL(window.location.href)
 const mode = url.searchParams.get('mode')
+const speedParam = url.searchParams.get('speed')
+const speed = speedParam ? Number(speedParam) : 1
+
+toastr.options.newestOnTop = false
+toastr.options.preventDuplicates = true
+
+const missionTypeHistory = []
+
+let disorientedDronesMessage
+let longIdleDronesMessage
 
 var app = new Framework7({ // eslint-disable-line no-unused-vars
   root: '#app', // App root element
@@ -33,7 +46,8 @@ var app = new Framework7({ // eslint-disable-line no-unused-vars
           gridWorld.run(1)
           console.log(gridWorld)
           $$('#arena-grid').html(gridWorld.render(gridWorld.state))
-          if ((mode === 'filer' || mode === 'cont') && gridWorld.state.missions.length > 3) {
+          if ((mode === 'filter' || mode === 'cont') && gridWorld.state.missions.length > 3) {
+            missionTypeHistory.push(gridWorld.state.missions.map(mission => mission.type))
             const droneIds = gridWorld.state.missions.map(((_, index) => index))
             //const activeDrones = droneIds.filter((id => gridWorld.state.missions[id].type === 'goto'))
             const fetchingDrones = droneIds.filter(  // active AND target is packet
@@ -61,21 +75,25 @@ var app = new Framework7({ // eslint-disable-line no-unused-vars
               (
                 id =>
                 gridWorld.state.missions[id].type !== 'goto' &&
-                gridWorld.history &&
-                gridWorld.history[gridWorld.history.length].missions[id].type !== 'goto'
+                missionTypeHistory.length > 1 &&
+                missionTypeHistory[missionTypeHistory.length - 1][id] !== 'goto' && 
+                missionTypeHistory[missionTypeHistory.length - 2][id] !== 'goto'
               )
             )
             const longIdleDronesWaitingTimes = longIdleDrones.map(
               droneId => {
                 let waitingTime = 1
-                const reversedHistory = gridWorld.history.reverse()
+                const reversedHistory = missionTypeHistory.slice().reverse()
                 reversedHistory.every(
-                  state => {
-                    if (state.missions[droneId].type !== 'goto') waitingTime++
-                    return state.missions[droneId].type !== 'goto'
+                  missions => {
+                    if (missions[droneId].type !== 'goto') {
+                      waitingTime++
+                      return true
+                    }
+                    else { return false }
                   }
                 )
-                return waitingTime
+                return waitingTime + 1
               }
             )
             const disorientedDrones = droneIds.filter( // active AND target is plain field
@@ -108,27 +126,31 @@ var app = new Framework7({ // eslint-disable-line no-unused-vars
                   </td>
                 </tr>
               </table>
-              <div>
-              <table>
-              <tr>
-              <td><strong style="font-size:20px">Alerts</strong></td>
-              </tr>
-              ${
-                disorientedDrones.length === 0 && longIdleDrones === 0
-                ? '<tr><td>None, all good!</td></tr>'
-                : disorientedDrones.map(
-                  droneId =>
-                    `<tr><td style="width:300px">Drone ${droneId} has its target set to an empty field${mode === 'cont' ? ', because the package going to pick up was justed picked up by another drone.' : '.'}</td></tr>`
-                    )
-                  +
-                  longIdleDrones.map(
-                    droneId =>
-                      `<tr><td style="width:300px">Drone ${droneId} is idle since ${longIdleDronesWaitingTimes} turns${mode === 'cont' ? ', because all waiting packages are already assigned to a drone.' : '.'}</td></tr>`
-                      )
-              }
-              </table>
-              <div>
             `)
+            if (disorientedDrones.length !== 0) {
+              const newDisorientedDronesMessage = `${mode === 'cont' ? `<strong>No clear target</strong> for drone(s) <strong>${disorientedDrones.join(',')}</strong>: assigned package(s) just picked up by other drone(s).` : `Drones <strong>${disorientedDrones.join(',')}</strong>: target set to <strong>empty field</strong>.`}`
+              if (disorientedDronesMessage != newDisorientedDronesMessage) {
+                if (document.getElementsByClassName('toast-warning')[0]) {
+                  document.getElementsByClassName('toast-warning')[0].innerHTML =
+                    `<div class="toast-title"></div><div class="toast-message">${newDisorientedDronesMessage}</div>`
+                } else {
+                  toastr.warning(newDisorientedDronesMessage, {timeOut: 10000})
+                }
+              }
+              disorientedDronesMessage = newDisorientedDronesMessage
+            }
+            if (longIdleDrones.length !== 0) {
+              const newLongIdleDronesMessage = `${mode === 'cont' ? `Drone(s) <strong>${longIdleDrones.join(',')} not working</strong>: fully charged and all waiting packages (if any) are already assigned to a drone.` : `Drones <strong>${droneId}: idle</strong> since several turns.`}`
+              if (longIdleDronesMessage != newLongIdleDronesMessage) {
+                if (document.getElementsByClassName('toast-info')[0]) {
+                  document.getElementsByClassName('toast-info')[0].innerHTML =
+                  `<div class="toast-title"></div><div class="toast-message">${newLongIdleDronesMessage}</div>`
+                } else {
+                  toastr.info(newLongIdleDronesMessage, {timeOut: 10000})
+                }
+              }
+              longIdleDronesMessage = newLongIdleDronesMessage
+            }
           } else {
             $$('#analysis').html(`
             <table>
@@ -163,7 +185,7 @@ var app = new Framework7({ // eslint-disable-line no-unused-vars
           `)
           }
         }
-      }, 2000)
+      }, 2000 / speed) // 2000
     })
   },
   // App routes

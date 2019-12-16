@@ -30,7 +30,8 @@
     "framework7-icons": "^3.0.0",
     "js-son-agent": "0.0.5",
     "material-design-icons": "^3.0.1",
-    "template7": "^1.4.2"
+    "template7": "^1.4.2",
+    "toastr": "^2.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
