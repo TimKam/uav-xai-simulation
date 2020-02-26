@@ -13,9 +13,12 @@ import routes from './routes.js'
 import GridWorld from './UAVGridWorld'
 
 const url = new URL(window.location.href)
-const mode = url.searchParams.get('mode')
+const modeParam= url.searchParams.get('mode')
+const mode = modeParam ? modeParam : 'basic'
 const speedParam = url.searchParams.get('speed')
 const speed = speedParam ? Number(speedParam) : 1
+const seedParam = url.searchParams.get('seed')
+const seed = seedParam ? Number(seedParam) : 0
 
 toastr.options.newestOnTop = false
 toastr.options.preventDuplicates = true
@@ -38,6 +41,7 @@ var app = new Framework7({ // eslint-disable-line no-unused-vars
       $$('.restart-button').on('click', () => {
         shouldRestart = true
       })
+      renderControls()
       window.setInterval(() => {
         if (shouldRestart) {
           shouldRestart = false
@@ -128,7 +132,7 @@ var app = new Framework7({ // eslint-disable-line no-unused-vars
               </table>
             `)
             if (disorientedDrones.length !== 0) {
-              const newDisorientedDronesMessage = `${mode === 'cont' ? `<strong>No clear target</strong> for drone(s) <strong>${disorientedDrones.join(',')}</strong>: assigned package(s) just picked up by other drone(s).` : `Drones <strong>${disorientedDrones.join(',')}</strong>: target set to <strong>empty field</strong>.`}`
+              const newDisorientedDronesMessage = `${mode === 'cont' ? `<strong>No clear target</strong> for drone(s) <strong>${disorientedDrones.join(',')}</strong>: assigned package(s) just picked up by other drone(s).` : `Drone(s) <strong>${disorientedDrones.join(',')}</strong>: target set to <strong>empty field</strong>.`}`
               if (disorientedDronesMessage != newDisorientedDronesMessage) {
                 if (document.getElementsByClassName('toast-warning')[0]) {
                   document.getElementsByClassName('toast-warning')[0].innerHTML =
@@ -203,3 +207,40 @@ function determineTaskTypes (state) {
   });
   return taskTypes.join('')
 }
+
+function renderControls () {
+  const controlsOn = url.searchParams.get('controls')
+  console.log(controlsOn)
+  if (controlsOn === 'true') {
+    document.querySelector('.restart-button').onclick = () => {
+      location.reload()
+    }
+    document.querySelector('.controls').style.visibility = 'visible'
+    const speedLabel = document.querySelector('#speed-label')
+    speedLabel.innerHTML = `Speed: ${speed}`
+    const speedSlider = document.querySelector('#speed')
+    speedSlider.value = speed
+    speedSlider.oninput = function() {
+      speedLabel.innerHTML = `Speed: ${this.value}`
+      url.searchParams.set('speed', this.value)
+      window.history.replaceState({ path: url.href }, '', url.href)
+    }
+    const seedLabel = document.querySelector('#seed-label')
+    seedLabel.innerHTML = `Seed: ${seed == 0 ? 'None' : seed}`
+    const seedSlider = document.querySelector('#seed')
+    seedSlider.value = seed
+    seedSlider.oninput = function() {
+      seedLabel.innerHTML = `Seed: ${this.value == 0 ? 'None' : this.value}`
+      url.searchParams.set('seed', this.value)
+      window.history.replaceState({ path: url.href }, '', url.href)
+    }
+    const modeSelect = document.querySelector('#mode-select')
+    modeSelect.value = mode
+    modeSelect.oninput = function() {
+      url.searchParams.set('mode', this.value)
+      window.history.replaceState({ path: url.href }, '', url.href)
+    }
+    oninput="updateValue('seed', this.value)"
+  }
+}
+

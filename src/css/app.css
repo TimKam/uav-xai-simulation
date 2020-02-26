@@ -67,6 +67,7 @@ td {
 .controls {
   padding-top: 20px;
   padding-bottom: 50px;
+  visibility: hidden;
 }
 
 .controls .button {
@@ -74,7 +75,6 @@ td {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  visibility: hidden;
 }
 
 .material-icons.money::before{
@@ -159,4 +159,11 @@ table.bdi td {
 
 .toast-info {
   background-color:#73A790;
+}
+
+select {
+  background-color: #304763;
+  padding: 10px;
+  color: #FFF;
+  cursor: pointer;
 }

@@ -32,7 +32,50 @@
             <i style="margin-left: 130px;"class="target-field material-icons target"></i><span>Delivery destination</span><br>
             <i style="margin-left: 130px;"class="material-icons charger"></i><span>Charge station</span><br>
           </div>
-          <div class="controls">
+          <div style="margin-left: 710px;" class="controls">
+            <h3 >Controls (click "Restart" to update):</h3>
+            <table>
+              <colgroup>
+                <col span="1" style="width: 20%;">
+                <col span="1" style="width: 40%;">
+                <col span="1" style="width: 40%;">
+             </colgroup>
+             <tbody>
+              <tr>
+                <td>
+                  <label for="mode-select" id="mode-label">Choose a mode:</label>
+                </td>
+                <td>
+                  <label for="volume" id="speed-label">Simulation speed:</label>
+                </td>
+                <td>
+                  <label for="volume" id="seed-label">Random seed (0 means none)</label>
+                </td>
+            </tr>
+            <tr>
+              <td>
+                <select style="max-width: 100px;" name="modes" id="mode-select">
+                  <option value="basic">Unfiltered</option>
+                  <option value="filter">Dynamic filter</option>
+                  <option value="cont">Dynamic filter and contrastive alerts</option>
+              </select>
+              <select style="background-color: transparent; cursor: none;"><option value="unfiltered">Dynamic filter an contrastive</option></select>
+              </td>
+              <td>
+                <input
+                  type="range" id="speed" name="speed" min="1" max="10"
+                >
+              </td>
+              <td>
+                <input
+                  type="range" id="seed" name="seed" min="0" max="100"
+                >
+              </td>
+              </tr>
+            </tbody>
+            </table>
+            
+           
               <a class="button button-fill restart-button">Restart</a>
           </div>
       </div>

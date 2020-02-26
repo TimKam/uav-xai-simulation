@@ -15,6 +15,10 @@ To run the simulation locally, proceed as follows:
 
 3. Start the simulation and the hot-reload loop with ``npm start``.
 
+To build the simulation for production, run ``npm run build-prod``.
+You find the output files in the ``www`` directory.
+The entry point is the ``index.html`` file.
+
 ## Main Authors
 
 * [Timotheus Kampik](https://github.com/TimKam)
