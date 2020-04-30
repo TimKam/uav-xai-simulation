@@ -25,6 +25,7 @@ toastr.options.preventDuplicates = true
 
 const missionTypeHistory = []
 
+window.absHistory = {}
 let disorientedDronesMessage
 let longIdleDronesMessage
 
@@ -36,6 +37,10 @@ var app = new Framework7({ // eslint-disable-line no-unused-vars
   // App root data
   data: () => {
     $$(document).on('page:init', e => {
+      document.getElementById('log-button').onclick = () => {
+        const uriContent = `data:text/plain;charset=utf-8,${encodeURIComponent(JSON.stringify(window.window.absHistory))}`
+        window.open(uriContent, 'simulation-log.json')
+      }
       let gridWorld = GridWorld()
       let shouldRestart = false
       $$('.restart-button').on('click', () => {
@@ -49,6 +54,7 @@ var app = new Framework7({ // eslint-disable-line no-unused-vars
         } else {
           gridWorld.run(1)
           console.log(gridWorld)
+          window.absHistory = gridWorld.history
           $$('#arena-grid').html(gridWorld.render(gridWorld.state))
           if ((mode === 'filter' || mode === 'cont') && gridWorld.state.missions.length > 3) {
             missionTypeHistory.push(gridWorld.state.missions.map(mission => mission.type))
