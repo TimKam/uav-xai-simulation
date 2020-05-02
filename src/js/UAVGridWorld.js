@@ -4,7 +4,7 @@ import { Belief, Desire, Plan, Agent, GridWorld, FieldType } from 'js-son-agent'
 
 const url = new URL(window.location.href)
 const seedParam = url.searchParams.get('seed')
-const scenarioParam = url.searchParams.get('scenario')
+window.scenarioParam = url.searchParams.get('scenario')
 
 let seed
 if (seedParam) {
@@ -41,6 +41,8 @@ if (scenarioParam) {
     maxBatteryLevel = 65
     packgeRespawnRate = 0.1
   }
+} else {
+  window.scenarioParam = 's2'
 }
 
 const numberToLetter = number => (number + 10).toString(36).toUpperCase()

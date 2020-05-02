@@ -43,6 +43,9 @@
              <tbody>
               <tr>
                 <td>
+                  <label for="mode-select" id="mode-label">#Drones:</label>
+                </td>
+                <td>
                   <label for="mode-select" id="mode-label">Choose a mode:</label>
                 </td>
                 <td>
@@ -53,6 +56,14 @@
                 </td>
             </tr>
             <tr>
+              <td>
+                <select style="max-width: 100px;" name="modes" id="drone-select">
+                  <option value="s0">1 drone</option>
+                  <option value="s1">3 drones</option>
+                  <option value="s2">10 drones</option>
+              </select>
+              <select style="background-color: transparent; cursor: none;"><option value="s2">10 drones</option></select>
+              </td>
               <td>
                 <select style="max-width: 100px;" name="modes" id="mode-select">
                   <option value="basic">Unfiltered</option>
@@ -80,7 +91,7 @@
                 <td> <a class="button button-fill restart-button">Restart</a>
                  </td>
                  <td>
-                  <a class="button button-fill" id="log-button">Get log</a>
+                  <a class="button button-fill" id="log-button">Get log (right click)</a>
                  </td>
               </tr>
             </table>

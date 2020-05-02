@@ -37,10 +37,6 @@ var app = new Framework7({ // eslint-disable-line no-unused-vars
   // App root data
   data: () => {
     $$(document).on('page:init', e => {
-      document.getElementById('log-button').onclick = () => {
-        const uriContent = `data:text/plain;charset=utf-8,${encodeURIComponent(JSON.stringify(window.window.absHistory))}`
-        window.open(uriContent, 'simulation-log.json')
-      }
       let gridWorld = GridWorld()
       let shouldRestart = false
       $$('.restart-button').on('click', () => {
@@ -55,6 +51,8 @@ var app = new Framework7({ // eslint-disable-line no-unused-vars
           gridWorld.run(1)
           console.log(gridWorld)
           window.absHistory = gridWorld.history
+          const uriContent = `data:text/plain;charset=utf-8,${encodeURIComponent(JSON.stringify(window.absHistory))}`
+            document.getElementById('log-button').href = uriContent
           $$('#arena-grid').html(gridWorld.render(gridWorld.state))
           if ((mode === 'filter' || mode === 'cont') && gridWorld.state.missions.length > 3) {
             missionTypeHistory.push(gridWorld.state.missions.map(mission => mission.type))
@@ -247,6 +245,13 @@ function renderControls () {
       window.history.replaceState({ path: url.href }, '', url.href)
     }
     oninput="updateValue('seed', this.value)"
+    const droneSelect = document.querySelector('#drone-select')
+    console.log(window.scenarioParam)
+    droneSelect.value = window.scenarioParam
+    droneSelect.oninput = function() {
+      url.searchParams.set('scenario', this.value)
+      window.history.replaceState({ path: url.href }, '', url.href)
+    }
   }
 }
 
